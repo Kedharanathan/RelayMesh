@@ -1,0 +1,378 @@
+/* ==========================================================================
+   RelayMesh - bespoke instrument CSS
+   Hand-written because these are diagram and hardware behaviours that Tailwind
+   cannot express cleanly: dash-flow along SVG paths, broadcast pulse rings,
+   latched relay states, and the disclosure mechanics of the spec panel.
+   ========================================================================== */
+
+:root {
+  --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   Hero scrim. The mesh runs live behind the opening statement, so the type
+   needs a guaranteed ground rather than a hoped-for one. Vertical on small
+   screens where the copy sits above the mesh, diagonal on wide screens where
+   it sits beside it.
+   -------------------------------------------------------------------------- */
+
+.hero-scrim {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg) 94%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 78%, transparent) 38%,
+    color-mix(in srgb, var(--bg) 22%, transparent) 62%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 1024px) {
+  .hero-scrim {
+    background:
+      linear-gradient(
+        96deg,
+        color-mix(in srgb, var(--bg) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 94%, transparent) 34%,
+        color-mix(in srgb, var(--bg) 62%, transparent) 56%,
+        color-mix(in srgb, var(--bg) 18%, transparent) 76%,
+        transparent 92%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--bg) 55%, transparent) 0%,
+        transparent 22%
+      );
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Controls. One mechanical language: press = 1px down, no bounce.
+   -------------------------------------------------------------------------- */
+
+.ctl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition:
+    background var(--dur-fast) var(--ease-snap),
+    border-color var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap),
+    transform var(--dur-fast) var(--ease-snap);
+}
+.ctl:hover:not(:disabled) {
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+.ctl:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.ctl:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ctl[aria-pressed="true"],
+.ctl[data-on="true"] {
+  background: var(--accent-wash);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+.ctl-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 500;
+}
+.ctl-primary:hover:not(:disabled) {
+  background: var(--accent-press);
+  border-color: var(--accent-press);
+  color: var(--bg);
+}
+.ctl-danger[data-on="true"] {
+  background: var(--stop-wash);
+  border-color: var(--stop);
+  color: var(--stop);
+}
+
+/* Latching hardware switch. Reads as a physical toggle, not an iOS pill. */
+.latch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 9px 11px;
+  cursor: pointer;
+  color: var(--text-muted);
+  touch-action: manipulation;
+  transition:
+    border-color var(--dur-fast) var(--ease-snap),
+    background var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap);
+}
+.latch:hover { border-color: var(--line-strong); color: var(--text); }
+.latch__slot {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+}
+.latch__throw {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--text-dim);
+  transition: transform var(--dur) var(--ease-snap), background var(--dur) var(--ease-snap);
+}
+.latch[aria-pressed="true"] { color: var(--text); border-color: var(--accent-line); }
+.latch[aria-pressed="true"] .latch__throw {
+  transform: translateX(14px);
+  background: var(--accent);
+}
+.latch[aria-pressed="true"][data-tone="stop"] { border-color: var(--stop); }
+.latch[aria-pressed="true"][data-tone="stop"] .latch__throw { background: var(--stop); }
+.latch__text { font-family: var(--font-mono); font-size: var(--fs-micro); letter-spacing: 0.07em; text-transform: uppercase; }
+
+/* Range input, restyled as an instrument slider. */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--line-strong);
+  border-radius: 1px;
+}
+.slider::-moz-range-track {
+  height: 2px;
+  background: var(--line-strong);
+  border-radius: 1px;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border-radius: 2px;
+  background: var(--accent);
+  border: none;
+  transition: transform var(--dur-fast) var(--ease-snap);
+}
+.slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--accent);
+  border: none;
+}
+.slider:hover::-webkit-slider-thumb { transform: scale(1.2); }
+.slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--accent-wash); }
+
+/* --------------------------------------------------------------------------
+   Status vocabulary. A dot here always encodes real machine state.
+   -------------------------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 5px 9px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.chip[data-state="live"] { color: var(--accent); border-color: var(--accent-line); background: var(--accent-wash); }
+.chip[data-state="stop"] { color: var(--stop); border-color: var(--stop); background: var(--stop-wash); }
+.chip[data-state="hold"] { color: var(--hold); border-color: var(--hold); background: var(--hold-wash); }
+
+.led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: currentColor;
+}
+.led--pulse { animation: led-pulse 1.8s var(--ease-out) infinite; }
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.28; }
+}
+
+/* --------------------------------------------------------------------------
+   SVG diagram behaviours
+   -------------------------------------------------------------------------- */
+
+/* Current flowing along a wire. Runs only while the path is energised. */
+.wire-flow {
+  stroke-dasharray: 3 7;
+  animation: wire-march 0.7s linear infinite;
+}
+@keyframes wire-march {
+  to { stroke-dashoffset: -10; }
+}
+
+/* A path that has been cut: no flow, drawn as a dead line. */
+.wire-dead { stroke-dasharray: 2 4; opacity: 0.34; }
+
+/* The motor shaft. Stops dead the instant ENABLE goes low. */
+.shaft { will-change: transform; }
+.shaft--run { animation: shaft-spin 1.05s linear infinite; }
+.shaft--reverse { animation: shaft-spin-rev 1.05s linear infinite; }
+@keyframes shaft-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shaft-spin-rev {
+  to { transform: rotate(-360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Spec panel disclosure. grid-template-rows 0fr -> 1fr, no fixed heights.
+   -------------------------------------------------------------------------- */
+
+.disclose {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms var(--ease-snap);
+}
+.disclose[data-open="true"] { grid-template-rows: 1fr; }
+.disclose > div { overflow: hidden; }
+
+/* --------------------------------------------------------------------------
+   FAQ. Native disclosure, restyled. Works with JavaScript off.
+   -------------------------------------------------------------------------- */
+
+.faq > summary::-webkit-details-marker { display: none; }
+.faq > summary::marker { content: ""; }
+.faq > summary { touch-action: manipulation; }
+.faq > summary:hover h3 { color: var(--accent); }
+.faq > summary h3 { transition: color var(--dur-fast) var(--ease-snap); }
+.faq[open] > summary .faq__mark { transform: rotate(180deg); }
+.faq[open] > summary h3 { color: var(--accent); }
+.faq > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Message log. Terminal register, monospace, newest row flashes once.
+   -------------------------------------------------------------------------- */
+
+.log {
+  font-family: var(--font-mono);
+  font-size: var(--fs-data);
+  line-height: 1.75;
+  font-variant-numeric: tabular-nums;
+}
+.log__row {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  gap: 10px;
+  padding: 1px 0;
+  color: var(--text-muted);
+}
+.log__row--new { animation: row-in 420ms var(--ease-snap); }
+@keyframes row-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-reveal. Applied by IntersectionObserver, never by scroll listener.
+   -------------------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 680ms var(--ease-out),
+    transform 680ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Comparison table. One hairline between rows, none above or below each row.
+   -------------------------------------------------------------------------- */
+
+.ctable { width: 100%; border-collapse: collapse; text-align: left; }
+.ctable th {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 400;
+  padding: 0 16px 12px 0;
+  vertical-align: bottom;
+}
+.ctable td {
+  padding: 16px 16px 16px 0;
+  vertical-align: top;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  border-top: 1px solid var(--line);
+}
+.ctable tbody tr:hover td { background: var(--accent-wash); }
+.ctable td:last-child, .ctable th:last-child { padding-right: 0; }
+
+@media (max-width: 800px) {
+  .ctable, .ctable tbody, .ctable tr, .ctable td { display: block; width: 100%; }
+  .ctable thead { display: none; }
+  .ctable tr {
+    border-top: 1px solid var(--line);
+    padding: 18px 0 6px;
+  }
+  .ctable td { border-top: none; padding: 0 0 12px; }
+  .ctable td::before {
+    content: attr(data-col);
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+}

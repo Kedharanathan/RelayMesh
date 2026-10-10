@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   RelayMesh design tokens
+   --------------------------------------------------------------------------
+   Identity: cool near-black instrumentation ground + ONE signal accent
+   (oscilloscope trace teal). Red and amber exist ONLY as machine state
+   (stop / deferred). They are never brand colour and never decorative.
+
+   Shape rule (locked, applied everywhere):
+     stage / outer shell .......... 20px  (--r-lg)  with a 6px bezel padding
+     inner core of a shell ........ 14px  (--r-inner)
+     card ......................... 12px  (--r-md)
+     control, chip, input, button .. 6px  (--r-sm)
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  --bg: #f4f6f8;
+  --bg-sunken: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f8fafb;
+  --surface-3: #eef2f5;
+
+  --line: rgb(13 20 28 / 0.10);
+  --line-strong: rgb(13 20 28 / 0.22);
+
+  --text: #0d141c;
+  --text-muted: #4a5763;
+  --text-dim: #5d6975;
+
+  /* single accent */
+  --accent: #00807d;
+  --accent-press: #006c6a;
+  --accent-wash: rgb(0 128 125 / 0.08);
+  --accent-line: rgb(0 128 125 / 0.32);
+
+  /* machine state only */
+  --stop: #da1e28;
+  --stop-wash: rgb(218 30 40 / 0.09);
+  --hold: #8e6a00;
+  --hold-wash: rgb(142 106 0 / 0.10);
+
+  --shadow-card: 0 1px 2px rgb(13 20 28 / 0.05), 0 12px 32px -12px rgb(13 20 28 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(13 20 28 / 0.06), 0 22px 48px -16px rgb(13 20 28 / 0.20);
+  --inner-hl: inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --grid-ink: rgb(13 20 28 / 0.055);
+  --scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0c10;
+  --bg-sunken: #07080b;
+  --surface: #101419;
+  --surface-2: #161b22;
+  --surface-3: #1c222b;
+
+  --line: rgb(255 255 255 / 0.09);
+  --line-strong: rgb(255 255 255 / 0.18);
+
+  --text: #e8edf2;
+  --text-muted: #9ba6b2;
+  --text-dim: #78838f;
+
+  --accent: #3ddbd9;
+  --accent-press: #6ff0ee;
+  --accent-wash: rgb(61 219 217 / 0.10);
+  --accent-line: rgb(61 219 217 / 0.38);
+
+  --stop: #ff8389;
+  --stop-wash: rgb(255 131 137 / 0.12);
+  --hold: #f1c21b;
+  --hold-wash: rgb(241 194 27 / 0.12);
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.45), 0 28px 60px -20px rgb(0 0 0 / 0.7);
+  --inner-hl: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --grid-ink: rgb(255 255 255 / 0.05);
+  --scheme: dark;
+}
+
+:root {
+  /* type scale - fluid, fixed set, no ad-hoc sizes anywhere in the app */
+  --fs-display: clamp(2.15rem, 1.34rem + 3.42vw, 3.75rem);
+  --fs-h2: clamp(1.75rem, 1.44rem + 1.32vw, 2.5rem);
+  --fs-h3: clamp(1.125rem, 1.06rem + 0.28vw, 1.3125rem);
+  --fs-lead: clamp(1rem, 0.96rem + 0.19vw, 1.125rem);
+  --fs-formula: clamp(1.0625rem, 0.72rem + 1.45vw, 1.75rem);
+  --fs-body: 0.9375rem;
+  --fs-sm: 0.8125rem;
+  --fs-data: 0.75rem;
+  --fs-micro: 0.6875rem;
+
+  /* shape */
+  --r-lg: 20px;
+  --r-inner: 14px;
+  --r-md: 12px;
+  --r-sm: 6px;
+
+  /* motion: mechanical. things click into place, they do not bounce. */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur: 260ms;
+  --dur-slow: 620ms;
+
+  --rail: 1200px;
+  --nav-h: 64px;
+
+  color-scheme: var(--scheme);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--text);
+  --color-muted: var(--text-muted);
+  --color-dim: var(--text-dim);
+  --color-accent: var(--accent);
+  --color-accent-press: var(--accent-press);
+  --color-accent-wash: var(--accent-wash);
+  --color-accent-line: var(--accent-line);
+  --color-stop: var(--stop);
+  --color-stop-wash: var(--stop-wash);
+  --color-hold: var(--hold);
+  --color-hold-wash: var(--hold-wash);
+
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-lg: var(--r-lg);
+  --radius-inner: var(--r-inner);
+  --radius-md: var(--r-md);
+  --radius-sm: var(--r-sm);
+
+  --text-display: var(--fs-display);
+  --text-h2: var(--fs-h2);
+  --text-h3: var(--fs-h3);
+  --text-lead: var(--fs-lead);
+  --text-formula: var(--fs-formula);
+  --text-body: var(--fs-body);
+  --text-sm: var(--fs-sm);
+  --text-data: var(--fs-data);
+  --text-micro: var(--fs-micro);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* anchor targets clear the floating nav */
+  scroll-padding-top: calc(var(--nav-h) + 28px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  /* clip, NOT hidden: overflow-x:hidden makes body a scroll container, which
+     silently breaks position:sticky on the pinned hero stage. clip contains
+     the same overflow without creating one. */
+  overflow-x: clip;
+  /* The controls already have their own :active state; the default grey
+     flash on iOS fights it. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+
+/* Visible, consistent focus on every interactive element. */
+:where(a, button, input, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+:where(a, button):focus:not(:focus-visible) {
+  outline: none;
+}
+
+svg text { font-kerning: none; }
+
+/* --------------------------------------------------------------------------
+   Reusable primitives
+   -------------------------------------------------------------------------- */
+
+.rail {
+  width: 100%;
+  max-width: var(--rail);
+  margin-inline: auto;
+  /* max() rather than + so a notch widens the gutter instead of stacking on it */
+  padding-inline: max(20px, env(safe-area-inset-left), env(safe-area-inset-right));
+}
+@media (min-width: 768px) {
+  .rail {
+    padding-inline: max(32px, env(safe-area-inset-left), env(safe-area-inset-right));
+  }
+}
+
+/* Double bezel: outer machined tray + inner glass plate, concentric radii. */
+.bezel {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 6px;
+  box-shadow: var(--shadow-card);
+}
+.bezel-core {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  box-shadow: var(--inner-hl);
+  overflow: hidden;
+}
+
+/* Mono data token. Marks "this value comes from the system". */
+.tok {
+  font-family: var(--font-mono);
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Fixed grain layer. Never attached to a scrolling container. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: var(--grain-url);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion. Every animated sequence also has a static or instant path
+   in JS; this is the CSS backstop.
+   -------------------------------------------------------------------------- */
+/* data-motion="off" is the switch the nav control flips, and the boot script
+   already set it to "off" for anyone whose OS asks for reduced motion. The
+   media query stays as the no-JavaScript backstop. */
+[data-motion="off"] {
+  scroll-behavior: auto;
+}
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

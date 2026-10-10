@@ -1,0 +1,35 @@
+{
+  "name": "relaymesh-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RelayMesh - decentralized, hardware-fail-safe coordination for warehouse robot fleets.",
+  "scripts": {
+    "dev": "next dev",
+    "predev": "node scripts/vendor-spline.mjs",
+    "build": "next build",
+    "prebuild": "node scripts/vendor-spline.mjs",
+    "start": "next start",
+    "serve": "npx --yes serve@latest out -l 4173",
+    "og": "node --experimental-strip-types scripts/build-og.mjs",
+    "vendor:spline": "node scripts/vendor-spline.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "motion": "^13.1.1",
+    "next": "^16.3.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@splinetool/runtime": "^2.0.5",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3"
+  }
+}
