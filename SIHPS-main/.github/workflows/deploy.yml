@@ -26,9 +26,6 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
       - name: Install dependencies & Build
         run: |
           if [ -f "package.json" ]; then
@@ -42,6 +39,10 @@ jobs:
             cd ..
             echo "OUT_DIR=SIHPS-main/out" >> $GITHUB_ENV
           fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        continue-on-error: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
