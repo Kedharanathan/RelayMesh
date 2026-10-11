@@ -8,7 +8,7 @@
  * deploy is obvious rather than quietly pointing at somebody else's domain.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://relaymesh.example"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kedharanathan.github.io/RelayMesh"
 ).replace(/\/$/, "");
 
 export const SITE_NAME = "RelayMesh";
